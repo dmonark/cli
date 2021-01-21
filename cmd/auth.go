@@ -51,7 +51,7 @@ func init() {
 	authCmd.AddCommand(authLoginCmd, authLogoutCmd)
 }
 
-func validateAuth() {
+func validateAuth(cmd *cobra.Command, args []string) {
 	if os.Getenv("rzp_key") == "" || os.Getenv("rzp_secret") == "" {
 		color.Red("auth failed!")
 		color.Yellow("please run 'rzp auth login -k <YOUR_KEY> -s <YOUR_SECRET>'")

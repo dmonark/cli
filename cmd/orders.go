@@ -11,6 +11,8 @@ import (
 )
 
 var orderId string
+var page int
+var limit int
 
 var orderCmd = &cobra.Command{
 	Use:    "order",
@@ -34,7 +36,8 @@ var orderListCmd = &cobra.Command{
 	Short:  "order list",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders", http.MethodGet, nil)
+		skip := (page - 1) * limit
+		response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders?skip="+fmt.Sprintf("%v", skip)+"&count="+fmt.Sprintf("%v", limit), http.MethodGet, nil)
 		if error != nil {
 			fmt.Println(error.Error())
 		}
@@ -92,6 +95,8 @@ var orderListCmd = &cobra.Command{
 }
 
 func init() {
+	orderListCmd.Flags().IntVarP(&page, "page", "p", 1, "Page number")
+	orderListCmd.Flags().IntVarP(&limit, "limit", "l", 10, "Number of result on one page")
 	orderCmd.Flags().StringVarP(&orderId, "id", "i", "", "Order Id")
 	orderCmd.MarkFlagRequired("id")
 	orderCmd.AddCommand(orderListCmd)

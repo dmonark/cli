@@ -10,26 +10,8 @@ import (
 	"github.com/spf13/cobra"
 )
 
-// var orderId string
-var page int
-var limit int
-
-// var orderCmd = &cobra.Command{
-// 	Use:    "order",
-// 	Short:  "fetch order by order Id",
-// 	PreRun: validateAuth,
-// 	RunE: func(cmd *cobra.Command, args []string) error {
-// 		response, error := ExecuteRequest("http://api.razorpay.in:28080/v1/orders/"+orderId, http.MethodGet, nil)
-// 		if error != nil {
-// 			fmt.Println(error.Error())
-// 		}
-// 		var data map[string]interface{}
-
-// 		fmt.Println(json.Unmarshal(response, &data))
-// 		fmt.Println("Printing all the orders")
-// 		return nil
-// 	},
-// }
+var opage int
+var olimit int
 
 var orderListCmd = &cobra.Command{
 	Use:    "order",
@@ -53,8 +35,8 @@ var orderListCmd = &cobra.Command{
 
 			items = append(items, data)
 		} else {
-			skip := (page - 1) * limit
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders?skip="+fmt.Sprintf("%v", skip)+"&count="+fmt.Sprintf("%v", limit), http.MethodGet, nil)
+			skip := (opage - 1) * olimit
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders?skip="+fmt.Sprintf("%v", skip)+"&count="+fmt.Sprintf("%v", olimit), http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 			}
@@ -116,6 +98,6 @@ var orderListCmd = &cobra.Command{
 }
 
 func init() {
-	orderListCmd.Flags().IntVarP(&page, "page", "p", 1, "Page number")
-	orderListCmd.Flags().IntVarP(&limit, "limit", "l", 10, "Number of result on one page")
+	orderListCmd.Flags().IntVarP(&opage, "page", "p", 1, "Page number")
+	orderListCmd.Flags().IntVarP(&olimit, "limit", "l", 10, "Number of result on one page")
 }

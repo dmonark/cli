@@ -8,53 +8,45 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var paymentId string
+var PaymentId string
 
-var paymentCmd = &cobra.Command{
-	Use:   "payment",
-	Short: "Payment Details for a payment id",
+var PaymentCmd = &cobra.Command{
+	Use:   "payments",
+	Short: "list payment details",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		response, error := ExecuteRequest("http://api.razorpay.in:28080/v1/payments/"+paymentId, http.MethodGet, nil)
-		if error != nil {
-			fmt.Println(error.Error())
-		}
-		var data map[string]interface{}
-
-		fmt.Println("Printing the payment details for:- ", paymentId)
-
-		json.Unmarshal(response, &data)
-
-		fmt.Println(data)
-
+		printPayments(args)
 		return nil
 	},
 }
 
-var paymentListCmd = &cobra.Command{
-	Use:   "payments",
-	Short: "List of payments associated with this merchant",
-	PreRun: validateAuth,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		response, error := ExecuteRequest("http://api.razorpay.in:28080/v1/payments", http.MethodGet, nil)
-		if error != nil {
-			fmt.Println(error.Error())
-		}
-		var data map[string]interface{}
+func printPayments(args []string) {
 
-		fmt.Println("Listing the payments details")
+	var response []byte
 
-		json.Unmarshal(response, &data)
+	var err error
 
-		fmt.Println(data)
+	if PaymentId == "" {
+		url := "http://api.razorpay.in:28080/v1/payments"
+		response, err = ExecuteRequest(url, http.MethodGet, nil)
+		fmt.Println("Listing the payments")
+	} else{
+		url := "http://api.razorpay.in:28080/v1/payments/"+PaymentId
+		response, err = ExecuteRequest(url, http.MethodGet, nil)
+		fmt.Println("Printing the payment details for:- ", PaymentId)
+	}
+	
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	var data map[string]interface{}
 
-		return nil
-	},
+	json.Unmarshal(response, &data)
+	result, _ := json.MarshalIndent(data, "", "  ")
+	fmt.Println(string(result))
 }
 
 func init() {
-	paymentCmd.Flags().StringVarP(&paymentId, "id", "i", "", "Payment Id")
-	paymentCmd.MarkFlagRequired("id")
-	
-	paymentCmd.AddCommand(paymentListCmd)
+	PaymentCmd.Flags().StringVarP(&PaymentId, "id", "i", "", "Payment Id")
+	rootCmd.AddCommand(PaymentCmd)
 }

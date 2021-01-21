@@ -2,14 +2,16 @@ package cmd
 
 import (
 	"encoding/json"
-	"github.com/gojektech/heimdall/httpclient"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"strings"
 	"time"
+
+	"github.com/gojektech/heimdall/httpclient"
 )
 
-func ExecuteRequest(url string, method string, request interface{}, authCreds map[string]string) ([]byte, error) {
+func ExecuteRequest(url string, method string, request interface{}) ([]byte, error) {
 	var client *httpclient.Client
 
 	timeout := 100000 * time.Millisecond
@@ -30,7 +32,7 @@ func ExecuteRequest(url string, method string, request interface{}, authCreds ma
 	}
 
 	if authCreds != nil {
-		httpReq.SetBasicAuth(authCreds["key"], authCreds["secret"])
+		httpReq.SetBasicAuth(os.Getenv("rzp_key"), os.Getenv("rzp_secret"))
 	}
 
 	resp, err := client.Do(httpReq)
@@ -43,5 +45,5 @@ func ExecuteRequest(url string, method string, request interface{}, authCreds ma
 		return nil, err
 	}
 
-	return respByte,  nil
+	return respByte, nil
 }

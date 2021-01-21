@@ -2,8 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -12,14 +10,6 @@ var orderCmd = &cobra.Command{
 	Use:   "orders",
 	Short: "list all the orders",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		for _, element := range os.Environ() {
-			variable := strings.Split(element, "=")
-			fmt.Println(variable[0], "=>", variable[1])
-		}
-		fmt.Println("**")
-		v := os.Getenv("rzp_secret")
-		// fmt.Println(b)
-		fmt.Println(v)
 		fmt.Println("Printing all the orders")
 		return nil
 	},

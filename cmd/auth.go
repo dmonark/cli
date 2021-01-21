@@ -2,9 +2,10 @@ package cmd
 
 import (
 	"fmt"
-	"syscall"
+	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/zalando/go-keyring"
 )
 
 var authCmd = &cobra.Command{
@@ -23,8 +24,24 @@ var authLoginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "login user",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println(syscall.Setenv("rzp_key", merchantKey))
-		fmt.Println(syscall.Setenv("rzp_secret", merchantSecret))
+		service := "my-app"
+		user := "anon"
+		password := "secret 12345"
+
+		// set password
+		err := keyring.Set(service, user, password)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// get password
+		secret, err := keyring.Get(service, user)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println(secret)
+
 		fmt.Println("User Login")
 		return nil
 	},

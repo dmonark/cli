@@ -2,26 +2,23 @@ package cmd
 
 import (
 	"fmt"
-	"os"
-	"strings"
-	"syscall"
+	"log"
 
 	"github.com/spf13/cobra"
+	"github.com/zalando/go-keyring"
 )
 
 var orderCmd = &cobra.Command{
 	Use:   "orders",
 	Short: "list all the orders",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		for _, element := range os.Environ() {
-			variable := strings.Split(element, "=")
-			fmt.Println(variable[0], "=>", variable[1])
+		service := "my-app"
+		user := "anon"
+		secret, err := keyring.Get(service, user)
+		if err != nil {
+			log.Fatal(err)
 		}
-		fmt.Println("**")
-		v, b := syscall.Getenv("rzp_key")
-		fmt.Println(b)
-		fmt.Println(v)
-		fmt.Println("Printing all the orders")
+		fmt.Println(secret)
 		return nil
 	},
 }

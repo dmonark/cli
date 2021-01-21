@@ -31,9 +31,7 @@ func ExecuteRequest(url string, method string, request interface{}) ([]byte, err
 		return nil, err
 	}
 
-	if authCreds != nil {
-		httpReq.SetBasicAuth(os.Getenv("rzp_key"), os.Getenv("rzp_secret"))
-	}
+	httpReq.SetBasicAuth(os.Getenv("rzp_key"), os.Getenv("rzp_secret"))
 
 	resp, err := client.Do(httpReq)
 	if err != nil {

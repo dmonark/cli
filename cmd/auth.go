@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 	"syscall"
 
 	"github.com/spf13/cobra"
@@ -23,8 +24,9 @@ var authLoginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "login user",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println(syscall.Setenv("rzp_key", merchantKey))
-		fmt.Println(syscall.Setenv("rzp_secret", merchantSecret))
+		fmt.Println(os.Setenv("rzp_key", merchantKey))
+		fmt.Println(os.Setenv("rzp_secret", merchantSecret))
+		syscall.Exec(os.Getenv("SHELL"), []string{os.Getenv("SHELL")}, syscall.Environ())
 		fmt.Println("User Login")
 		return nil
 	},

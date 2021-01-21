@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"syscall"
 
 	"github.com/spf13/cobra"
 )
@@ -18,8 +17,8 @@ var orderCmd = &cobra.Command{
 			fmt.Println(variable[0], "=>", variable[1])
 		}
 		fmt.Println("**")
-		v, b := syscall.Getenv("rzp_key")
-		fmt.Println(b)
+		v := os.Getenv("rzp_secret")
+		// fmt.Println(b)
 		fmt.Println(v)
 		fmt.Println("Printing all the orders")
 		return nil

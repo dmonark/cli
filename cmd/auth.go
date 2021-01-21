@@ -5,6 +5,7 @@ import (
 	"os"
 	"syscall"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -48,4 +49,12 @@ func init() {
 	authLoginCmd.MarkFlagRequired("secret")
 
 	authCmd.AddCommand(authLoginCmd, authLogoutCmd)
+}
+
+func validateAuth() {
+	if os.Getenv("rzp_key") == "" || os.Getenv("rzp_secret") == "" {
+		color.Red("auth failed!")
+		color.Yellow("please run 'rzp auth login -k <YOUR_KEY> -s <YOUR_SECRET>'")
+		os.Exit(1)
+	}
 }

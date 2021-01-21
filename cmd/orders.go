@@ -11,8 +11,11 @@ import (
 var orderId string
 
 var orderCmd = &cobra.Command{
-	Use:   "getOrder",
+	Use:   "order",
 	Short: "fetch order by order Id",
+	PreRun: func(cmd *cobra.Command, args []string) {
+		validateAuth()
+	},
 	RunE: func(cmd *cobra.Command, args []string) error {
 		response, error := ExecuteRequest("http://api.razorpay.in:28080/v1/orders/"+orderId, http.MethodGet, nil)
 		if error != nil {
@@ -36,6 +39,7 @@ var orderCreateCmd = &cobra.Command{
 }
 
 func init() {
-	orderCmd.Flags().StringVarP(&orderId, "orderId", "k", "", "Order Id")
+	orderCmd.Flags().StringVarP(&orderId, "id", "i", "", "Order Id")
+	orderCmd.MarkFlagRequired("id")
 	orderCmd.AddCommand(orderCreateCmd)
 }

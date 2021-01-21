@@ -12,8 +12,9 @@ type Invoice struct {
 }
 
 var InvoiceCmd = &cobra.Command{
-	Use:   "invoice",
-	Short: "print invoice",
+	Use:    "invoice",
+	Short:  "print invoice",
+	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		printInvoice(args)
 		return nil

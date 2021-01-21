@@ -10,48 +10,68 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var orderId string
+// var orderId string
 var page int
 var limit int
 
-var orderCmd = &cobra.Command{
-	Use:    "order",
-	Short:  "fetch order by order Id",
-	PreRun: validateAuth,
-	RunE: func(cmd *cobra.Command, args []string) error {
-		response, error := ExecuteRequest("http://api.razorpay.in:28080/v1/orders/"+orderId, http.MethodGet, nil)
-		if error != nil {
-			fmt.Println(error.Error())
-		}
-		var data map[string]interface{}
+// var orderCmd = &cobra.Command{
+// 	Use:    "order",
+// 	Short:  "fetch order by order Id",
+// 	PreRun: validateAuth,
+// 	RunE: func(cmd *cobra.Command, args []string) error {
+// 		response, error := ExecuteRequest("http://api.razorpay.in:28080/v1/orders/"+orderId, http.MethodGet, nil)
+// 		if error != nil {
+// 			fmt.Println(error.Error())
+// 		}
+// 		var data map[string]interface{}
 
-		fmt.Println(json.Unmarshal(response, &data))
-		fmt.Println("Printing all the orders")
-		return nil
-	},
-}
+// 		fmt.Println(json.Unmarshal(response, &data))
+// 		fmt.Println("Printing all the orders")
+// 		return nil
+// 	},
+// }
 
 var orderListCmd = &cobra.Command{
-	Use:    "list",
+	Use:    "order",
 	Short:  "order list",
 	PreRun: validateAuth,
+	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		skip := (page - 1) * limit
-		response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders?skip="+fmt.Sprintf("%v", skip)+"&count="+fmt.Sprintf("%v", limit), http.MethodGet, nil)
-		if error != nil {
-			fmt.Println(error.Error())
-		}
-		if response == nil {
-			fmt.Println("Empty Response")
-			os.Exit(1)
-		}
-		var data map[string]interface{}
+		var items []interface{}
+		if len(args) == 1 {
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders/"+args[0], http.MethodGet, nil)
+			if error != nil {
+				fmt.Println(error.Error())
+			}
+			if response == nil {
+				fmt.Println("Empty Response")
+				os.Exit(1)
+			}
 
-		json.Unmarshal(response, &data)
+			var data map[string]interface{}
+			json.Unmarshal(response, &data)
 
-		if data["count"].(float64) < 1 {
-			fmt.Println("No Entity found")
-			os.Exit(1)
+			items = append(items, data)
+		} else {
+			skip := (page - 1) * limit
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders?skip="+fmt.Sprintf("%v", skip)+"&count="+fmt.Sprintf("%v", limit), http.MethodGet, nil)
+			if error != nil {
+				fmt.Println(error.Error())
+			}
+			if response == nil {
+				fmt.Println("Empty Response")
+				os.Exit(1)
+			}
+
+			var data map[string]interface{}
+			json.Unmarshal(response, &data)
+
+			if data["count"].(float64) < 1 {
+				fmt.Println("No Entity found")
+				os.Exit(1)
+			}
+
+			items = data["items"].([]interface{})
 		}
 
 		table := tablewriter.NewWriter(os.Stdout)
@@ -75,7 +95,7 @@ var orderListCmd = &cobra.Command{
 		table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
 		table.SetAlignment(tablewriter.ALIGN_LEFT)
 
-		for _, v := range data["items"].([]interface{}) {
+		for _, v := range items {
 			new_map := v.(map[string]interface{})
 			row := []string{
 				fmt.Sprintf("%v", new_map["id"]),
@@ -91,13 +111,11 @@ var orderListCmd = &cobra.Command{
 		table.Render()
 
 		return nil
+
 	},
 }
 
 func init() {
 	orderListCmd.Flags().IntVarP(&page, "page", "p", 1, "Page number")
 	orderListCmd.Flags().IntVarP(&limit, "limit", "l", 10, "Number of result on one page")
-	orderCmd.Flags().StringVarP(&orderId, "id", "i", "", "Order Id")
-	orderCmd.MarkFlagRequired("id")
-	orderCmd.AddCommand(orderListCmd)
 }

@@ -13,7 +13,7 @@ var rootCmd = &cobra.Command{
 }
 
 func Execute() {
-	rootCmd.AddCommand(orderCmd, authCmd)
+	rootCmd.AddCommand(PaymentCmd, orderListCmd, authCmd)
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

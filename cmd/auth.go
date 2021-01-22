@@ -25,10 +25,10 @@ var authLoginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "login user",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println(os.Setenv("rzp_key", merchantKey))
-		fmt.Println(os.Setenv("rzp_secret", merchantSecret))
+		os.Setenv("rzp_key", merchantKey)
+		os.Setenv("rzp_secret", merchantSecret)
 		syscall.Exec(os.Getenv("SHELL"), []string{os.Getenv("SHELL")}, syscall.Environ())
-		fmt.Println("User Login")
+		fmt.Println("User Logged in")
 		return nil
 	},
 }
@@ -37,7 +37,10 @@ var authLogoutCmd = &cobra.Command{
 	Use:   "logout",
 	Short: "logout user",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println("User Logout")
+		os.Unsetenv("rzp_key")
+		os.Unsetenv("rzp_secret")
+		syscall.Exec(os.Getenv("SHELL"), []string{os.Getenv("SHELL")}, syscall.Environ())
+		fmt.Println("User Logged out")
 		return nil
 	},
 }

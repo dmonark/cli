@@ -40,6 +40,9 @@ func printInvoice(args []string) {
 		if err != nil {
 			fmt.Println(err)
 		}
+		var data map[string]interface{}
+		json.Unmarshal(response, &data)
+		structureInvoiceById(data)
 	}
 
 	// result, _ := json.MarshalIndent(data, "", "  ")

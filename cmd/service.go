@@ -45,6 +45,11 @@ func ExecuteRequest(url string, method string, request interface{}) ([]byte, err
 		return nil, err
 	}
 
+	if respByte == nil {
+		color.Red("Empty Response")
+		os.Exit(1)
+	}
+
 	var response map[string]interface{}
 
 	json.Unmarshal(respByte, &response)

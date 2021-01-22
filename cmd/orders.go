@@ -25,10 +25,6 @@ var orderListCmd = &cobra.Command{
 				fmt.Println(error.Error())
 				os.Exit(1)
 			}
-			if response == nil {
-				fmt.Println("Empty Response")
-				os.Exit(1)
-			}
 
 			var data map[string]interface{}
 			json.Unmarshal(response, &data)
@@ -39,10 +35,6 @@ var orderListCmd = &cobra.Command{
 			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
-				os.Exit(1)
-			}
-			if response == nil {
-				fmt.Println("Empty Response")
 				os.Exit(1)
 			}
 

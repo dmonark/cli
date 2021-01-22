@@ -15,7 +15,7 @@ var balanceCmd = &cobra.Command{
 	Short:  "Show balance",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		response, error := ExecuteRequest("http://0.0.0.0:28080/v1/balance", http.MethodGet, nil)
+		response, error := ExecuteRequest("https://api.razorpay.com/v1/balance", http.MethodGet, nil)
 		if error != nil {
 			fmt.Println(error.Error())
 			os.Exit(1)
@@ -25,7 +25,7 @@ var balanceCmd = &cobra.Command{
 		json.Unmarshal(response, &data)
 
 		amount := data["balance"].(float64)
-		color.Yellow("Your balance is " + fmt.Sprintf("%v", amount))
+		color.Yellow("Your balance is " + fmt.Sprintf("%f ", amount) + data["currency"].(string))
 		return nil
 
 	},

@@ -18,7 +18,6 @@ var customerListCmd = &cobra.Command{
 	Use:    "customer",
 	Short:  "customer list",
 	PreRun: validateAuth,
-	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
 		if cid != "" {

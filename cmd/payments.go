@@ -17,7 +17,6 @@ var paymentListCmd = &cobra.Command{
 	Use:    "payment",
 	Short:  "payment list",
 	PreRun: validateAuth,
-	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
 		if pid != "" {

@@ -11,53 +11,29 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var ipage int
 var iid string
 
 var invoiceListCmd = &cobra.Command{
 	Use:    "invoice",
 	Short:  "invoice list",
 	PreRun: validateAuth,
-	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
-		if iid != "" {
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/invoices/"+iid, http.MethodGet, nil)
-			if error != nil {
-				fmt.Println(error.Error())
-				os.Exit(1)
-			}
-			if response == nil {
-				fmt.Println("Empty Response")
-				os.Exit(1)
-			}
 
-			var data map[string]interface{}
-			json.Unmarshal(response, &data)
-
-			items = append(items, data)
-		} else {
-			skip := (cpage - 1) * 10
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/invoices?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
-			if error != nil {
-				fmt.Println(error.Error())
-				os.Exit(1)
-			}
-			if response == nil {
-				fmt.Println("Empty Response")
-				os.Exit(1)
-			}
-
-			var data map[string]interface{}
-			json.Unmarshal(response, &data)
-
-			if data["count"].(float64) < 1 {
-				fmt.Println("No Entity found")
-				os.Exit(1)
-			}
-
-			items = data["items"].([]interface{})
+		response, error := ExecuteRequest("http://0.0.0.0:28080/v1/invoices/"+iid, http.MethodGet, nil)
+		if error != nil {
+			fmt.Println(error.Error())
+			os.Exit(1)
 		}
+		if response == nil {
+			fmt.Println("Empty Response")
+			os.Exit(1)
+		}
+
+		var data map[string]interface{}
+		json.Unmarshal(response, &data)
+
+		items = append(items, data)
 
 		table := tablewriter.NewWriter(os.Stdout)
 		table.SetHeader([]string{"ID", "Customer ID", "Order ID", "Amount", "Currency", "Created At"})
@@ -101,6 +77,6 @@ var invoiceListCmd = &cobra.Command{
 }
 
 func init() {
-	invoiceListCmd.Flags().IntVarP(&ipage, "page", "p", 1, "Page number")
 	invoiceListCmd.Flags().StringVarP(&iid, "id", "i", "", "Invoice ID")
+	invoiceListCmd.MarkFlagRequired("id")
 }

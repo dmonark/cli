@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"time"
 
 	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
@@ -79,7 +78,7 @@ var customerListCmd = &cobra.Command{
 				fmt.Sprintf("%v", new_map["contact"]),
 				fmt.Sprintf("%v", new_map["email"]),
 				fmt.Sprintf("%v", new_map["gstin"]),
-				fmt.Sprintf("%v", time.Unix(int64(new_map["created_at"].(float64)), 0)),
+				fmt.Sprintf("%v", GetReadbleDate(new_map["created_at"])),
 			}
 			table.Append(row)
 		}

@@ -12,7 +12,7 @@ import (
 )
 
 var cpage int
-var climit int
+var cid string
 
 var customerListCmd = &cobra.Command{
 	Use:    "customer",
@@ -21,10 +21,11 @@ var customerListCmd = &cobra.Command{
 	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
-		if len(args) == 1 {
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/customers/"+args[0], http.MethodGet, nil)
+		if cid != "" {
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/customers/"+cid, http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
+				os.Exit(1)
 			}
 			if response == nil {
 				fmt.Println("Empty Response")
@@ -36,10 +37,11 @@ var customerListCmd = &cobra.Command{
 
 			items = append(items, data)
 		} else {
-			skip := (cpage - 1) * climit
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/customers?skip="+fmt.Sprintf("%v", skip)+"&count="+fmt.Sprintf("%v", climit), http.MethodGet, nil)
+			skip := (cpage - 1) * 10
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/customers?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
+				os.Exit(1)
 			}
 			if response == nil {
 				fmt.Println("Empty Response")
@@ -100,5 +102,5 @@ var customerListCmd = &cobra.Command{
 
 func init() {
 	customerListCmd.Flags().IntVarP(&cpage, "page", "p", 1, "Page number")
-	customerListCmd.Flags().IntVarP(&climit, "limit", "l", 10, "Number of result on one page")
+	customerListCmd.Flags().StringVarP(&cid, "id", "i", "", "Customer ID")
 }

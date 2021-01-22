@@ -4,49 +4,105 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 
+	"github.com/olekukonko/tablewriter"
 	"github.com/spf13/cobra"
 )
 
-var PaymentId string
+var ppage int
+var pid string
 
-var PaymentCmd = &cobra.Command{
-	Use:   "payments",
-	Short: "list payment details",
+var paymentListCmd = &cobra.Command{
+	Use:    "payment",
+	Short:  "payment list",
 	PreRun: validateAuth,
+	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		printPayments(args)
+		var items []interface{}
+		if pid != "" {
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/payments/"+pid, http.MethodGet, nil)
+			if error != nil {
+				fmt.Println(error.Error())
+				os.Exit(1)
+			}
+			if response == nil {
+				fmt.Println("Empty Response")
+				os.Exit(1)
+			}
+
+			var data map[string]interface{}
+			json.Unmarshal(response, &data)
+
+			items = append(items, data)
+		} else {
+			skip := (ppage - 1) * 10
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/payments?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
+			if error != nil {
+				fmt.Println(error.Error())
+				os.Exit(1)
+			}
+			if response == nil {
+				fmt.Println("Empty Response")
+				os.Exit(1)
+			}
+
+			var data map[string]interface{}
+			json.Unmarshal(response, &data)
+
+			if data["count"].(float64) < 1 {
+				fmt.Println("No Entity found")
+				os.Exit(1)
+			}
+
+			items = data["items"].([]interface{})
+		}
+
+		table := tablewriter.NewWriter(os.Stdout)
+		table.SetHeader([]string{"ID", "Amount", "Currency", "Method", "Status", "Receipt", "Amount paid"})
+		table.SetHeaderColor(
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
+		)
+		table.SetColumnColor(
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgCyanColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgCyanColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgCyanColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgCyanColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgCyanColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgCyanColor},
+			tablewriter.Colors{tablewriter.Bold, tablewriter.FgCyanColor},
+		)
+		table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
+		table.SetAlignment(tablewriter.ALIGN_LEFT)
+
+		for _, v := range items {
+			new_map := v.(map[string]interface{})
+			row := []string{
+				fmt.Sprintf("%v", new_map["id"]),
+				fmt.Sprintf("%v", new_map["amount"]),
+				fmt.Sprintf("%v", new_map["currency"]),
+				fmt.Sprintf("%v", new_map["method"]),
+				fmt.Sprintf("%v", new_map["status"]),
+				fmt.Sprintf("%v", new_map["receipt"]),
+				fmt.Sprintf("%v", new_map["amount_paid"]),
+			}
+			table.Append(row)
+		}
+
+		table.Render()
+
 		return nil
+
 	},
 }
 
-func printPayments(args []string) {
-
-	var response []byte
-
-	var err error
-
-	if PaymentId == "" {
-		url := "http://api.razorpay.in:28080/v1/payments"
-		response, err = ExecuteRequest(url, http.MethodGet, nil)
-		fmt.Println("Listing the payments")
-	} else{
-		url := "http://api.razorpay.in:28080/v1/payments/"+PaymentId
-		response, err = ExecuteRequest(url, http.MethodGet, nil)
-		fmt.Println("Printing the payment details for:- ", PaymentId)
-	}
-	
-	if err != nil {
-		fmt.Println(err.Error())
-	}
-	var data map[string]interface{}
-
-	json.Unmarshal(response, &data)
-	result, _ := json.MarshalIndent(data, "", "  ")
-	fmt.Println(string(result))
-}
-
 func init() {
-	PaymentCmd.Flags().StringVarP(&PaymentId, "id", "i", "", "Payment Id")
-	rootCmd.AddCommand(PaymentCmd)
+	paymentListCmd.Flags().IntVarP(&ppage, "page", "p", 1, "Page number")
+	paymentListCmd.Flags().StringVarP(&pid, "id", "i", "", "Payment ID")
 }

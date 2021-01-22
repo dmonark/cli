@@ -11,7 +11,7 @@ import (
 )
 
 var opage int
-var olimit int
+var oid string
 
 var orderListCmd = &cobra.Command{
 	Use:    "order",
@@ -20,10 +20,11 @@ var orderListCmd = &cobra.Command{
 	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
-		if len(args) == 1 {
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders/"+args[0], http.MethodGet, nil)
+		if oid != "" {
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders/"+oid, http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
+				os.Exit(1)
 			}
 			if response == nil {
 				fmt.Println("Empty Response")
@@ -35,10 +36,11 @@ var orderListCmd = &cobra.Command{
 
 			items = append(items, data)
 		} else {
-			skip := (opage - 1) * olimit
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders?skip="+fmt.Sprintf("%v", skip)+"&count="+fmt.Sprintf("%v", olimit), http.MethodGet, nil)
+			skip := (opage - 1) * 10
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/orders?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
+				os.Exit(1)
 			}
 			if response == nil {
 				fmt.Println("Empty Response")
@@ -99,5 +101,5 @@ var orderListCmd = &cobra.Command{
 
 func init() {
 	orderListCmd.Flags().IntVarP(&opage, "page", "p", 1, "Page number")
-	orderListCmd.Flags().IntVarP(&olimit, "limit", "l", 10, "Number of result on one page")
+	orderListCmd.Flags().StringVarP(&oid, "id", "i", "", "Order ID")
 }

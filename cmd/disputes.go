@@ -15,7 +15,7 @@ var did string
 
 var disputeListCmd = &cobra.Command{
 	Use:    "dispute",
-	Short:  "dispute list",
+	Short:  "Display all disputes",
 	PreRun: validateAuth,
 	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {

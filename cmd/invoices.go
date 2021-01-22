@@ -13,7 +13,7 @@ type Invoice struct {
 
 var InvoiceCmd = &cobra.Command{
 	Use:    "invoice",
-	Short:  "print invoice",
+	Short:  "Display all invoices",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		printInvoice(args)
@@ -51,6 +51,5 @@ func printInvoice(args []string) {
 	// fmt.Println(string(result))
 }
 func init() {
-	InvoiceCmd.Flags().StringVarP(&InvoiceId, "string", "i", "", "To Print invoice by id")
-	rootCmd.AddCommand(InvoiceCmd)
+	InvoiceCmd.Flags().StringVarP(&InvoiceId, "string", "i", "", "Invoice ID")
 }

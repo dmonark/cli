@@ -10,7 +10,7 @@ import (
 
 var dashboardListCmd = &cobra.Command{
 	Use:    "dashboard",
-	Short:  "open dashboard",
+	Short:  "Open dashboard in browser",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		url := "http://dashboard.razorpay.com/"

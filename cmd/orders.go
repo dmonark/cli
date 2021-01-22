@@ -15,7 +15,7 @@ var oid string
 
 var orderListCmd = &cobra.Command{
 	Use:    "order",
-	Short:  "order list",
+	Short:  "Display all orders",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}

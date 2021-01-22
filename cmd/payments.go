@@ -15,7 +15,7 @@ var pid string
 
 var paymentListCmd = &cobra.Command{
 	Use:    "payment",
-	Short:  "payment list",
+	Short:  "Display all payments",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}

@@ -11,9 +11,8 @@ import (
 
 var authCmd = &cobra.Command{
 	Use:   "auth",
-	Short: "shows who is login",
+	Short: "Razorpay auth",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Println("Printing login info")
 		return nil
 	},
 }
@@ -23,7 +22,8 @@ var merchantSecret string
 
 var authLoginCmd = &cobra.Command{
 	Use:   "login",
-	Short: "login user",
+	Short: "login user with key and secret",
+	Long:  "All Razorpay APIs are authorized using Basic Authorization. Basic authorization requires <YOUR_KEY_ID>, <YOUR_KEY_SECRET>",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		os.Setenv("rzp_key", merchantKey)
 		os.Setenv("rzp_secret", merchantSecret)
@@ -46,8 +46,8 @@ var authLogoutCmd = &cobra.Command{
 }
 
 func init() {
-	authLoginCmd.Flags().StringVarP(&merchantKey, "key", "k", "", "Key of merchant")
-	authLoginCmd.Flags().StringVarP(&merchantSecret, "secret", "s", "", "Secret of merchant")
+	authLoginCmd.Flags().StringVarP(&merchantKey, "key", "k", "", "Razorpay merchant key")
+	authLoginCmd.Flags().StringVarP(&merchantSecret, "secret", "s", "", "Razorpay merchant secret")
 	authLoginCmd.MarkFlagRequired("key")
 	authLoginCmd.MarkFlagRequired("secret")
 

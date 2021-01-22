@@ -12,7 +12,7 @@ import (
 
 var balanceCmd = &cobra.Command{
 	Use:    "balance",
-	Short:  "Show balance",
+	Short:  "Display merchant balance",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		response, error := ExecuteRequest("https://api.razorpay.com/v1/balance", http.MethodGet, nil)

@@ -15,7 +15,7 @@ var cid string
 
 var customerListCmd = &cobra.Command{
 	Use:    "customer",
-	Short:  "customer list",
+	Short:  "Display all customers",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}

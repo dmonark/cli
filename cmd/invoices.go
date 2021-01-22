@@ -28,17 +28,24 @@ func printInvoice(args []string) {
 	if InvoiceId == "" {
 		url := "https://api.razorpay.com/v1/invoices"
 		response, err = ExecuteRequest(url, http.MethodGet, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
+		var data map[string]interface{}
+		json.Unmarshal(response, &data)
+		structureInvoiceList(data)
 	} else {
 		url := "https://api.razorpay.com/v1/invoices/" + InvoiceId
 		response, err = ExecuteRequest(url, http.MethodGet, nil)
+		if err != nil {
+			fmt.Println(err)
+		}
 	}
-	if err != nil {
-		fmt.Println(err)
-	}
-	var data map[string]interface{}
-	json.Unmarshal(response, &data)
-	result, _ := json.MarshalIndent(data, "", "  ")
-	fmt.Println(string(result))
+
+	// result, _ := json.MarshalIndent(data, "", "  ")
+	// output := pretty.Pretty(response)
+	// result := pretty.Color(output, nil)
+	// fmt.Println(string(result))
 }
 func init() {
 	InvoiceCmd.Flags().StringVarP(&InvoiceId, "string", "i", "", "To Print invoice by id")

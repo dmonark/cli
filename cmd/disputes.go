@@ -10,17 +10,18 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var ppage int
-var pid string
+var dpage int
+var did string
 
-var paymentListCmd = &cobra.Command{
-	Use:    "payment",
-	Short:  "payment list",
+var disputeListCmd = &cobra.Command{
+	Use:    "dispute",
+	Short:  "dispute list",
 	PreRun: validateAuth,
+	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
 		if pid != "" {
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/payments/"+pid, http.MethodGet, nil)
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/disputes/"+did, http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 				os.Exit(1)
@@ -31,8 +32,8 @@ var paymentListCmd = &cobra.Command{
 
 			items = append(items, data)
 		} else {
-			skip := (ppage - 1) * 10
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/payments?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
+			skip := (dpage - 1) * 10
+			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/disputes?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 				os.Exit(1)
@@ -50,7 +51,7 @@ var paymentListCmd = &cobra.Command{
 		}
 
 		table := tablewriter.NewWriter(os.Stdout)
-		table.SetHeader([]string{"ID", "Order ID", "Amount", "Currency", "Method", "Status", "Receipt"})
+		table.SetHeader([]string{"ID", "Payment ID", "Amount", "Currency", "Method", "Status", "Reason Code"})
 		table.SetHeaderColor(
 			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
 			tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
@@ -76,12 +77,12 @@ var paymentListCmd = &cobra.Command{
 			new_map := v.(map[string]interface{})
 			row := []string{
 				fmt.Sprintf("%v", new_map["id"]),
-				fmt.Sprintf("%v", new_map["order_id"]),
+				fmt.Sprintf("%v", new_map["payment_id"]),
 				fmt.Sprintf("%v", new_map["amount"]),
 				fmt.Sprintf("%v", new_map["currency"]),
 				fmt.Sprintf("%v", new_map["method"]),
 				fmt.Sprintf("%v", new_map["status"]),
-				fmt.Sprintf("%v", new_map["receipt"]),
+				fmt.Sprintf("%v", new_map["reason_code"]),
 			}
 			table.Append(row)
 		}
@@ -94,6 +95,6 @@ var paymentListCmd = &cobra.Command{
 }
 
 func init() {
-	paymentListCmd.Flags().IntVarP(&ppage, "page", "p", 1, "Page number")
-	paymentListCmd.Flags().StringVarP(&pid, "id", "i", "", "Payment ID")
+	disputeListCmd.Flags().IntVarP(&dpage, "page", "p", 1, "Page number")
+	disputeListCmd.Flags().StringVarP(&did, "id", "i", "", "Dispute ID")
 }

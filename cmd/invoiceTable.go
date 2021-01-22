@@ -41,46 +41,94 @@ func structureInvoiceById(data map[string]interface{}) {
 	//Address table
 
 	table = tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{"Shipping Address", "Billing Address"})
+	table.SetHeader([]string{"", "Shipping Address", "Billing Address"})
 	table.SetHeaderColor(
+		tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
 		tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
 		tablewriter.Colors{tablewriter.Bold, tablewriter.FgGreenColor},
 	)
 	table.SetColumnColor(
+		tablewriter.Colors{tablewriter.Bold, tablewriter.FgRedColor},
 		tablewriter.Colors{tablewriter.Normal, tablewriter.FgCyanColor},
 		tablewriter.Colors{tablewriter.Normal, tablewriter.FgCyanColor},
 	)
 	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
 	table.SetAlignment(tablewriter.ALIGN_LEFT)
 
+	billing_address := data["customer_details"].(map[string]interface{})["billing_address"]
+	shipping_address := data["customer_details"].(map[string]interface{})["shipping_address"]
+
 	row = []string{
+		fmt.Sprintf("%v", "Name"),
 		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["name"]),
 		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["name"]),
 	}
 	table.Append(row)
+	var billingAddr, shippingAddr string
+	if billing_address == nil {
+		billingAddr = "N/A"
+	} else {
+		billingAddr = (billing_address.(map[string]interface{})["line1"]).(string) + (data["customer_details"].(map[string]interface{})["billing_address"].(map[string]interface{})["line2"].(string))
+	}
+	if shipping_address == nil {
+		shippingAddr = "N/A"
+	} else {
+		shippingAddr = (shipping_address.(map[string]interface{})["line1"]).(string) + (data["customer_details"].(map[string]interface{})["shipping_address"].(map[string]interface{})["line2"].(string))
+	}
 	row = []string{
-		fmt.Sprintf("%v", (data["customer_details"].(map[string]interface{})["billing_address"].(map[string]interface{})["line1"]).(string)+(data["customer_details"].(map[string]interface{})["billing_address"].(map[string]interface{})["line2"].(string))),
-		fmt.Sprintf("%v", (data["customer_details"].(map[string]interface{})["shipping_address"].(map[string]interface{})["line1"]).(string)+(data["customer_details"].(map[string]interface{})["shipping_address"].(map[string]interface{})["line2"].(string))),
+		fmt.Sprintf("%v", "Address"),
+		fmt.Sprintf("%v", billingAddr),
+		fmt.Sprintf("%v", shippingAddr),
 	}
 	table.Append(row)
+
+	var shipping_city, billing_city string
+	if billing_address == nil {
+		billing_city = "N/A"
+	} else {
+		billing_city = billing_address.(map[string]interface{})["city"].(string)
+	}
+	if shipping_address == nil {
+		shipping_city = "N/A"
+	} else {
+		shipping_city = shipping_address.(map[string]interface{})["city"].(string)
+	}
+
 	row = []string{
-		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["billing_address"].(map[string]interface{})["city"]),
-		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["shipping_address"].(map[string]interface{})["city"]),
+		fmt.Sprintf("%v", "City"),
+		fmt.Sprintf("%v", billing_city),
+		fmt.Sprintf("%v", shipping_city),
 	}
 	table.Append(row)
+
+	var shipping_state, billing_state string
+	if billing_address == nil {
+		billing_state = "N/A"
+	} else {
+		billing_state = billing_address.(map[string]interface{})["state"].(string)
+	}
+	if shipping_address == nil {
+		shipping_state = "N/A"
+	} else {
+		shipping_state = shipping_address.(map[string]interface{})["state"].(string)
+	}
+
 	row = []string{
-		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["billing_address"].(map[string]interface{})["state"]),
-		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["shipping_address"].(map[string]interface{})["state"]),
+		fmt.Sprintf("%v", "State"),
+		fmt.Sprintf("%v", billing_state),
+		fmt.Sprintf("%v", shipping_state),
 	}
 	table.Append(row)
 
 	row = []string{
+		fmt.Sprintf("%v", "Email"),
 		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["email"]),
 		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["email"]),
 	}
 	table.Append(row)
 
 	row = []string{
+		fmt.Sprintf("%v", "Contact"),
 		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["contact"]),
 		fmt.Sprintf("%v", data["customer_details"].(map[string]interface{})["contact"]),
 	}

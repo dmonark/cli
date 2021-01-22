@@ -15,13 +15,13 @@ var did string
 
 var disputeListCmd = &cobra.Command{
 	Use:    "dispute",
-	Short:  "dispute list",
+	Short:  "Display all disputes",
 	PreRun: validateAuth,
 	Args:   cobra.MaximumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
 		if pid != "" {
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/disputes/"+did, http.MethodGet, nil)
+			response, error := ExecuteRequest("https://api.razorpay.com/v1/disputes/"+did, http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 				os.Exit(1)
@@ -33,7 +33,7 @@ var disputeListCmd = &cobra.Command{
 			items = append(items, data)
 		} else {
 			skip := (dpage - 1) * 10
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/disputes?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
+			response, error := ExecuteRequest("https://api.razorpay.com/v1/disputes?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 				os.Exit(1)

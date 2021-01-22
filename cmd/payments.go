@@ -15,12 +15,12 @@ var pid string
 
 var paymentListCmd = &cobra.Command{
 	Use:    "payment",
-	Short:  "payment list",
+	Short:  "Display all payments",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
 		if pid != "" {
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/payments/"+pid, http.MethodGet, nil)
+			response, error := ExecuteRequest("https://api.razorpay.com/v1/payments/"+pid, http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 				os.Exit(1)
@@ -32,7 +32,7 @@ var paymentListCmd = &cobra.Command{
 			items = append(items, data)
 		} else {
 			skip := (ppage - 1) * 10
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/payments?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
+			response, error := ExecuteRequest("https://api.razorpay.com/v1/payments?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 				os.Exit(1)

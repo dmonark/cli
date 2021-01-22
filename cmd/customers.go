@@ -15,12 +15,12 @@ var cid string
 
 var customerListCmd = &cobra.Command{
 	Use:    "customer",
-	Short:  "customer list",
+	Short:  "Display all customers",
 	PreRun: validateAuth,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var items []interface{}
 		if cid != "" {
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/customers/"+cid, http.MethodGet, nil)
+			response, error := ExecuteRequest("https://api.razorpay.com/v1/customers/"+cid, http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 				os.Exit(1)
@@ -32,7 +32,7 @@ var customerListCmd = &cobra.Command{
 			items = append(items, data)
 		} else {
 			skip := (cpage - 1) * 10
-			response, error := ExecuteRequest("http://0.0.0.0:28080/v1/customers?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
+			response, error := ExecuteRequest("https://api.razorpay.com/v1/customers?skip="+fmt.Sprintf("%v", skip), http.MethodGet, nil)
 			if error != nil {
 				fmt.Println(error.Error())
 				os.Exit(1)
